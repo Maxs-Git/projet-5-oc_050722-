@@ -22,8 +22,7 @@ function fetchData() {
     })
     .then((data) => {
       console.log(data);
-      buildTest(data);
-      optionBuild(data);
+      buildHtml(data);
     })
     .catch((error) => {
       console.log(error);
@@ -32,17 +31,14 @@ function fetchData() {
 fetchData();
 
 //affiche les données
-function buildTest(data) {
+function buildHtml(data) {
   imgCanap.innerHTML =
     "<img src= " + data.imageUrl + "  alt=" + data.altTxt + "></img>";
 
   title.innerHTML = data.name;
   price.innerHTML = data.price;
   desc.innerHTML = data.description;
-}
 
-//affiche la partie select aves les options
-function optionBuild(data) {
   let newOptions = data.colors;
   let newValues = data.colors;
   colors.options.length = 0;
@@ -58,6 +54,5 @@ function postLocal() {
   let testObject = [quantity.value, colors.value, param1];
   localStorage.setItem("testObject", JSON.stringify(testObject));
 }
-
 
 btn.addEventListener("click", postLocal);
