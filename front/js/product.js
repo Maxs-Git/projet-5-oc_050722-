@@ -1,19 +1,20 @@
 const myKeysValues = window.location.search;
 const urlParams = new URLSearchParams(myKeysValues);
-const param1 = urlParams.get("id");
+const id = urlParams.get("id");
 
 let imgCanap = document.querySelector(".item__img");
 let title = document.getElementById("title");
 let price = document.getElementById("price");
 let desc = document.getElementById("description");
 let colors = document.getElementById("colors");
+let quantity = document.getElementById("quantity");
 let btn = document.getElementById("addToCart");
 
 // let quantity = document.getElementById("quantity").value;
 
 //récuperation des donné a partir de l'id
 function fetchData() {
-  fetch(`http://localhost:3000/api/products/${param1}`)
+  fetch(`http://localhost:3000/api/products/${id}`)
     .then((response) => {
       if (!response.ok) {
         throw Error("ERROR");
@@ -21,7 +22,6 @@ function fetchData() {
       return response.json();
     })
     .then((data) => {
-      console.log(data);
       buildHtml(data);
     })
     .catch((error) => {
@@ -47,12 +47,29 @@ function buildHtml(data) {
   }
 }
 
-// en test
+let cart = []; // la panier
 
-//post in local storage
-function postLocal() {
-  let testObject = [quantity.value, colors.value, param1];
-  localStorage.setItem("testObject", JSON.stringify(testObject));
+//l'objet
+let kanap = {
+  id: id,
+  color: colors.selectedIndex,
+  quantity: quantity.value,
+};
+//Regarde si il y a une quantité
+function checkQuantity() {
+  if (quantity.value > 0 && quantity.value <= 100) {
+    return cart.push(kanap);
+  } else {
+    return alert("select quantity");
+  }
 }
 
-btn.addEventListener("click", postLocal);
+cart.findIndex((search) => {
+  if (kanap.id == search.id && search.color == kanap.color) {
+    return true;
+  } else {
+    return false;
+  }
+});
+
+btn.addEventListener("click", checkQuantity);
