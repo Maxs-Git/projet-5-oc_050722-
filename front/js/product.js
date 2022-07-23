@@ -47,29 +47,37 @@ function buildHtml(data) {
   }
 }
 
-let cart = []; // la panier
+let cart = [];
 
-//l'objet
-let kanap = {
-  id: id,
-  color: colors.selectedIndex,
-  quantity: quantity.value,
-};
-//Regarde si il y a une quantité
-function checkQuantity() {
+//verifie la quantité
+function test2(testObject) {
+  testObject = { quantity: quantity.value, color: colors.value, id: id };
+
   if (quantity.value > 0 && quantity.value <= 100) {
-    return cart.push(kanap);
+    return cart.push(testObject);
   } else {
-    return alert("select quantity");
+    alert("quantity");
   }
 }
 
-cart.findIndex((search) => {
-  if (kanap.id == search.id && search.color == kanap.color) {
-    return true;
-  } else {
-    return false;
-  }
-});
+function postLocal() {
+  localStorage.setItem("testCart", JSON.stringify(cart));
+}
 
-btn.addEventListener("click", checkQuantity);
+btn.addEventListener("click", test2);
+btn.addEventListener("click", postLocal);
+
+function verify() {
+  let objJson = localStorage.getItem("testCart");
+  let cartObj = JSON.parse(objJson);
+
+  cartObj.findIndex((search) => {
+    if (id == search.id && search.color == search.color) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+}
+
+verify();
