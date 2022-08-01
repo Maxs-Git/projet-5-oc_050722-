@@ -10,7 +10,7 @@ let colors = document.getElementById("colors");
 let quantity = document.getElementById("quantity");
 let btn = document.getElementById("addToCart");
 
-// let quantity = document.getElementById("quantity").value;
+
 
 //récuperation des donné a partir de l'id
 function fetchData() {
@@ -49,30 +49,13 @@ function buildHtml(data) {
 
 let cart = [];
 
-//verifie la quantité
-function test2(testObject) {
-  testObject = { quantity: quantity.value, color: colors.value, id: id };
-
-  if (quantity.value > 0 && quantity.value <= 100) {
-    return cart.push(testObject);
-  } else {
-    alert("quantity");
+function verify(product) {
+  let objJson = localStorage.getItem("cart");
+  if (objJson) {
+    cart = JSON.parse(objJson);
   }
-}
-
-function postLocal() {
-  localStorage.setItem("testCart", JSON.stringify(cart));
-}
-
-btn.addEventListener("click", test2);
-btn.addEventListener("click", postLocal);
-
-function verify() {
-  let objJson = localStorage.getItem("testCart");
-  let cartObj = JSON.parse(objJson);
-
-  cartObj.findIndex((search) => {
-    if (id == search.id && search.color == search.color) {
+  return cart.findIndex((search) => {
+    if (product.id == search.id && product.color == search.color) {
       return true;
     } else {
       return false;
@@ -80,4 +63,37 @@ function verify() {
   });
 }
 
-verify();
+function quantityCheck(checkProduct) {
+  if (checkProduct.quantity > 0 && checkProduct.quantity <= 100) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+btn.addEventListener("click", () => {
+  let quantityValue = quantity.value;
+  let quantityNumber = parseInt(quantityValue);
+  let productAdded = {
+    quantity: quantityNumber,
+    color: colors.value,
+    id: id,
+  };
+  let checkQuantity = quantityCheck(productAdded);
+
+  if (checkQuantity == true) {
+  } else {
+    return alert("quantity");
+  }
+
+  let productIndex = verify(productAdded);
+  if (productIndex < 0) {
+    cart.push(productAdded);
+  } else if (cart[productIndex] < 100) {
+    cart[productIndex].quantity += productAdded.quantity;
+  } else {
+    Math.max(cart[productIndex], 100);
+    alert("Merci de pas dépasser 100 kanap");
+  }
+  localStorage.setItem("cart", JSON.stringify(cart));
+});
