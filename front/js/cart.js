@@ -1,10 +1,8 @@
 let cart = localStorage.getItem("cart");
-
 let panier = JSON.parse(cart);
-
-console.log(panier);
-
 let itemCart = document.getElementById("cart__items");
+
+let mixedCart = [];
 
 function fetchData() {
   fetch(`http://localhost:3000/api/products`)
@@ -15,60 +13,53 @@ function fetchData() {
       return response.json();
     })
     .then((data) => {
-      console.log(data);
+      mixedCart = panier.map((panierObject) => {
+        let dataIndex = data.findIndex((el) => {
+          return el._id === panierObject.id;
+        });
+        if (dataIndex > -1) {
+          return {
+            id: panierObject.id,
+            color: panierObject.color,
+            quantity: panierObject.quantity,
+            price: data[dataIndex].price,
+            desc: data[dataIndex].description,
+            name: data[dataIndex].name,
+            image: data[dataIndex].imageUrl,
+            imgAlt: data[dataIndex].altTxt,
+          };
+        } else {
+          return panierObject;
+        }
+      });
+      mixedCart.forEach((object) => {
+        itemCart.innerHTML = `
+        <article class="cart__item" data-id="${object.id}" data-color="${object.color}">
+          <div class="cart__item__img">
+            <img src="${object.image}" alt="${object.desc}">
+          </div>
+          <div class="cart__item__content">
+            <div class="cart__item__content__description">
+              <h2>${object.name}</h2>
+              <p>${object.color}</p>
+              <p>${object.price} €</p>
+            </div>
+            <div class="cart__item__content__settings">
+              <div class="cart__item__content__settings__quantity">
+                <p>Qté :</p>
+                <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${object.quantity}">
+              </div>
+              <div class="cart__item__content__settings__delete">
+                <p class="deleteItem">Supprimer</p>
+              </div>
+            </div>
+          </div>
+        </article>
+        `;
+      });
     })
     .catch((error) => {
       console.log(error);
     });
 }
 fetchData();
-
-function buildProductHtml(object) {
-  itemCart.innerHTML = `
-    <article class="cart__item" data-id="${object.id}" data-color="${object.color}">
-      <div class="cart__item__img">
-        <img src="" alt="Photographie d'un canapé">
-      </div>
-      <div class="cart__item__content">
-        <div class="cart__item__content__description">
-          <h2>Nom du produit</h2>
-          <p>${object.color}</p>
-          <p>42,00 €</p>
-        </div>
-        <div class="cart__item__content__settings">
-          <div class="cart__item__content__settings__quantity">
-            <p>Qté : </p>
-            <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${object.quantity}">
-          </div>
-          <div class="cart__item__content__settings__delete">
-            <p class="deleteItem">Supprimer</p>
-          </div>
-        </div>
-      </div>
-    </article>
-    `;
-}
-
-panier.forEach(buildProductHtml);
-
-//   <!-- <article class="cart__item" data-id="{product-ID}" data-color="{product-color}">
-//   <div class="cart__item__img">
-//     <img src="../images/product01.jpg" alt="Photographie d'un canapé">
-//   </div>
-//   <div class="cart__item__content">
-//     <div class="cart__item__content__description">
-//       <h2>Nom du produit</h2>
-//       <p>Vert</p>
-//       <p>42,00 €</p>
-//     </div>
-//     <div class="cart__item__content__settings">
-//       <div class="cart__item__content__settings__quantity">
-//         <p>Qté : </p>
-//         <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="42">
-//       </div>
-//       <div class="cart__item__content__settings__delete">
-//         <p class="deleteItem">Supprimer</p>
-//       </div>
-//     </div>
-//   </div>
-// </article> -->

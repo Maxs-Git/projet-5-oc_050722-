@@ -10,8 +10,6 @@ let colors = document.getElementById("colors");
 let quantity = document.getElementById("quantity");
 let btn = document.getElementById("addToCart");
 
-
-
 //récuperation des donné a partir de l'id
 function fetchData() {
   fetch(`http://localhost:3000/api/products/${id}`)
@@ -89,7 +87,7 @@ btn.addEventListener("click", () => {
   let productIndex = verify(productAdded);
   if (productIndex < 0) {
     cart.push(productAdded);
-  } else if (cart[productIndex] < 100) {
+  } else if (cart[productIndex].quantity + productAdded.quantity <= 100) {
     cart[productIndex].quantity += productAdded.quantity;
   } else {
     Math.max(cart[productIndex], 100);
