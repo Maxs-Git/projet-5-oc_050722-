@@ -40,15 +40,15 @@ function fetchData() {
 
       let itemQuantity = document.querySelector(".itemQuantity");
 
-      itemQuantity.addEventListener("change", () => {
-        quantityParent = itemQuantity.closest("article");
-        let quantityIndex = mixedCart.findIndex((quantityEl) => {
+      itemQuantity.addEventListener("change", () => { 
+        quantityParent = itemQuantity.closest("article"); // on récupere l'elemtn le plus pres du click de l'utilisateur
+        let quantityIndex = mixedCart.findIndex((quantityEl) => { // on cherche dans le mixedcart si la couleur et l'id correspond
           return (
             quantityEl.id == quantityParent.dataset.id &&
             quantityEl.color == quantityParent.dataset.color
           );
         });
-        mixedCart[quantityIndex].quantity = itemQuantity.value;
+        mixedCart[quantityIndex].quantity = itemQuantity.value; //et on donne a mixedcart la quantity de notre bouton
       });
 
       ////////////////////////////////////////////////////////////////////////////////
@@ -115,4 +115,29 @@ function calculQtePrice() {
   totalPrice.innerHTML = `${priceCalcul}`;
 }
 
+function validate() {
+  let regFirstName = /^[a-zA-Z]+ [a-zA-Z]+$/;
+  let firstName = document.getElementById("firstName").value;
+  let firstNameResult = regFirstName.test(firstName);
+  if (firstNameResult == false) {
+    let errorFirstName = document.getElementById("firstNameErrorMsg");
+    errorFirstName.innerHTML = "Incorrect FirstName";
+  } else {
+    console.log("ok");
+  }
+}
+
+let btnSubmit = document.getElementById("order");
+
+btnSubmit.addEventListener("click", validate);
+
 fetchData();
+
+//regex
+
+//prenom: /^[a-zA-Z]+ [a-zA-Z]+$/;
+//nom: /^[a-zA-Z]+ [a-zA-Z]+$/;
+// adresse: /^[a-z0-9\s,'-]*$/i
+// Ville: ^[a-zA-Z\\u0080-\\u024F.]+((?:[ -.|'])[a-zA-Z\\u0080-\\u024F]+)*$
+//Ville2: ^[a-zA-Z\u0080-\u024F]+(?:. |-| |')*([1-9a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$
+// email: 	^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$
