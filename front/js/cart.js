@@ -37,38 +37,44 @@ function fetchData() {
         }
       });
       buildHtml(mixedCart);
+      let itemQuantities = document.querySelectorAll(".itemQuantity");
 
-      let itemQuantity = document.querySelector(".itemQuantity");
+      for (let itemQuantity of itemQuantities) {
+        itemQuantity.addEventListener("change", () => {
+          quantityParent = itemQuantity.closest("article"); // on récupere l'elemtn le plus pres du click de l'utilisateur
+          let mixedCartIndex = mixedCart.findIndex((quantityEl) => {
+            // on cherche dans le mixedcart si la couleur et l'id correspond
+            return (
+              quantityEl.id == quantityParent.dataset.id &&
+              quantityEl.color == quantityParent.dataset.color
+            );
+          });
+          mixedCart[mixedCartIndex].quantity = itemQuantity.value; //et on donne a mixedcart la quantity de notre bouton
 
-      itemQuantity.addEventListener("change", () => { 
-        quantityParent = itemQuantity.closest("article"); // on récupere l'elemtn le plus pres du click de l'utilisateur
-        let quantityIndex = mixedCart.findIndex((quantityEl) => { // on cherche dans le mixedcart si la couleur et l'id correspond
-          return (
-            quantityEl.id == quantityParent.dataset.id &&
-            quantityEl.color == quantityParent.dataset.color
-          );
+          calculQtePrice();
         });
-        mixedCart[quantityIndex].quantity = itemQuantity.value; //et on donne a mixedcart la quantity de notre bouton
-      });
+      }
 
-      ////////////////////////////////////////////////////////////////////////////////
-      let suppr = document.querySelector(".deleteItem");
-      suppr.addEventListener("click", () => {
-        parentArticle = suppr.closest("article");
-        console.log(parentArticle.dataset);
+      let deleteButtons = document.querySelectorAll(".deleteItem");
+      for (let suppr of deleteButtons) {
+        suppr.addEventListener("click", () => {
+          parentArticle = suppr.closest("article");
+          console.log(parentArticle.dataset);
 
-        let deleteIndex = mixedCart.findIndex((deleteEl) => {
-          return (
-            deleteEl.id == parentArticle.dataset.id &&
-            deleteEl.color == parentArticle.dataset.color
-          );
+          let deleteIndex = mixedCart.findIndex((deleteEl) => {
+            return (
+              deleteEl.id == parentArticle.dataset.id &&
+              deleteEl.color == parentArticle.dataset.color
+            );
+          });
+          mixedCart.splice(deleteIndex, 1);
+          parentArticle.remove();
+          calculQtePrice();
         });
-        mixedCart.splice(deleteIndex, 1);
-        parentArticle.remove();
-      });
+      }
       calculQtePrice();
     })
-    ///////////////////////////////////////////////////////////////////////////////
+
     .catch((error) => {
       console.log(error);
     });
@@ -102,6 +108,7 @@ function buildHtml() {
   });
 }
 
+//calcul le prix total et la quantity
 function calculQtePrice() {
   let quantityCalcul = mixedCart.reduce(
     (accumulator, x) => accumulator + x.quantity,
@@ -115,21 +122,87 @@ function calculQtePrice() {
   totalPrice.innerHTML = `${priceCalcul}`;
 }
 
-function validate() {
-  let regFirstName = /^[a-zA-Z]+ [a-zA-Z]+$/;
-  let firstName = document.getElementById("firstName").value;
-  let firstNameResult = regFirstName.test(firstName);
-  if (firstNameResult == false) {
-    let errorFirstName = document.getElementById("firstNameErrorMsg");
-    errorFirstName.innerHTML = "Incorrect FirstName";
-  } else {
-    console.log("ok");
-  }
+//check le form si toutes les informations sont corrects
+let regexInfos = [
+  {
+    regex: /^[A-Za-z]+(((\'|\-|\.)?([A-Za-z])+))?$/,
+    errorMessage: "Incorrect FirstName",
+    errorMessageId: "firstNameErrorMsg",
+    elementId: "firstName",
+  },
+  {
+    regex: /^[A-Za-z]+(((\'|\-|\.)?([A-Za-z])+))?$/,
+    errorMessage: "Nom incorrect",
+    errorMessageId: "lastNameErrorMsg",
+    elementId: "lastName",
+  },
+  {
+    regex: /^[a-z0-9\s,'-]*$/i,
+    errorMessage: "Adresse incorrect",
+    errorMessageId: "addressErrorMsg",
+    elementId: "address",
+  },
+  {
+    regex: /^[a-zA-Z\\u0080-\\u024F.]+((?:[ -.|'])[a-zA-Z\\u0080-\\u024F]+)*$/,
+    errorMessage: "Ville incorrect",
+    errorMessageId: "cityErrorMsg",
+    elementId: "city",
+  },
+  {
+    regex: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/,
+    errorMessage: "email incorrect",
+    errorMessageId: "emailErrorMsg",
+    elementId: "email",
+  },
+];
+
+let userData = [];
+
+function validate(regexInfos) {
+  regexInfos.forEach((regexEl) => {
+    let inputElement = document.getElementById(regexEl.elementId).value;
+    let inputElementResult = regexEl.regex.test(inputElement);
+    if (inputElementResult == false) {
+      let errorInputElement = document.getElementById(regexEl.errorMessageId);
+      errorInputElement.innerHTML = regexEl.errorMessage;
+    } else {
+      return (userData = {
+        firstName: document.getElementById("firstName").value,
+        lastName: document.getElementById("lastName").value,
+        adress: document.getElementById("address").value,
+        city: document.getElementById("city").value,
+        email: document.getElementById("email").value,
+      });
+    }
+  });
 }
 
 let btnSubmit = document.getElementById("order");
 
-btnSubmit.addEventListener("click", validate);
+btnSubmit.addEventListener("click", (e) => {
+  e.preventDefault();
+  validate(regexInfos);
+  postData();
+});
+
+function postData() {
+  fetch("http://localhost:3000/api/products", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(userData, mixedCart),
+  })
+    .then(function (res) {
+      if (res.ok) {
+        return res.json();
+      }
+    })
+    .then(function (value) {
+      console.log(value);
+    });
+}
 
 fetchData();
 

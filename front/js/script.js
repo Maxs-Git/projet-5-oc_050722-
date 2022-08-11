@@ -31,30 +31,3 @@ function fetchData() {
 
 fetchData();
 
-// function postData() {
-//   fetch("http://localhost:3000/api/products", {
-//     method: "POST",
-//     headers: {
-//       Accept: "products/json",
-//       "Content-Type": "products/json",
-//     },
-//     body: JSON.stringify({
-//       name: "morpheus",
-//       job: "leader",
-//     }),
-//   })
-//     .then((response) => {
-//       if (!response.ok) {
-//         throw Error("ERROR");
-//       }
-//       return response.json();
-//     })
-//     .then((data) => {
-//       console.log(data);
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//     });
-// }
-
-// postData();
