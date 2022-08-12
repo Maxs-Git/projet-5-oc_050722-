@@ -37,8 +37,9 @@ function fetchData() {
         }
       });
       buildHtml(mixedCart);
-      let itemQuantities = document.querySelectorAll(".itemQuantity");
 
+      //met a jour quantity de l'objet quand on clique dessus
+      let itemQuantities = document.querySelectorAll(".itemQuantity");
       for (let itemQuantity of itemQuantities) {
         itemQuantity.addEventListener("change", () => {
           quantityParent = itemQuantity.closest("article"); // on récupere l'elemtn le plus pres du click de l'utilisateur
@@ -50,7 +51,8 @@ function fetchData() {
             );
           });
           mixedCart[mixedCartIndex].quantity = itemQuantity.value; //et on donne a mixedcart la quantity de notre bouton
-
+          panier[mixedCartIndex].quantity = itemQuantity.value;
+          updateLocal();
           calculQtePrice();
         });
       }
@@ -68,8 +70,10 @@ function fetchData() {
             );
           });
           mixedCart.splice(deleteIndex, 1);
+          panier.splice(deleteIndex, 1);
           parentArticle.remove();
           calculQtePrice();
+          updateLocal();
         });
       }
       calculQtePrice();
@@ -120,6 +124,11 @@ function calculQtePrice() {
   );
   totalQuantity.innerHTML = `${quantityCalcul}`;
   totalPrice.innerHTML = `${priceCalcul}`;
+}
+ //cette fonction permet de nettoyer le local storage te le mettre a jour a chaque fois qu'un objet est supprimer ou modifier
+function updateLocal() {
+  localStorage.clear();
+  localStorage.setItem("cart", JSON.stringify(panier));
 }
 
 //check le form si toutes les informations sont corrects
