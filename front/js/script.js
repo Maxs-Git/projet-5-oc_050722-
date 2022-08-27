@@ -11,7 +11,7 @@ function buildProductHtml(product) {
   `;
 }
 
-//Récuperation des données de l'api
+//Récupération des données de l'api
 function fetchData() {
   fetch("http://localhost:3000/api/products")
     .then((response) => {

@@ -15,10 +15,10 @@ function fetchData() {
       return response.json();
     })
     .then((data) => {
-      //mixed cart deviendra notre nouveau tableau grace au point qui seras une fusion du local storage et de l'api a condition que les objets ont la même id
+      //mixed cart deviendra notre nouveau tableau grace au point qui sera une fusion du local storage et de l'api a condition que les objets ont la même id
       mixedCart = panier.map((panierObject) => {
         let dataIndex = data.findIndex((el) => {
-          //dataIndex = au resultat de la recherche du find index donc [0] [1] etc
+          //dataIndex = le résultat de la recherche du find index donc [0] [1] etc.
           return el._id === panierObject.id;
         });
         if (dataIndex > -1) {
@@ -38,11 +38,11 @@ function fetchData() {
       });
       buildHtml(mixedCart);
 
-      //met a jour quantity de l'objet quand on clique dessus
+      //Se met à jour quantity de l'objet quand on clique dessus
       let itemQuantities = document.querySelectorAll(".itemQuantity");
       for (let itemQuantity of itemQuantities) {
         itemQuantity.addEventListener("change", () => {
-          quantityParent = itemQuantity.closest("article"); // on récupere l'elemtn le plus pres du click de l'utilisateur
+          quantityParent = itemQuantity.closest("article"); // on récupère l'element le plus près du click de l'utilisateur
           let mixedCartIndex = mixedCart.findIndex((quantityEl) => {
             // on cherche dans le mixedcart si la couleur et l'id correspond
             return (
@@ -50,13 +50,14 @@ function fetchData() {
               quantityEl.color == quantityParent.dataset.color
             );
           });
-          mixedCart[mixedCartIndex].quantity = itemQuantity.value; //et on donne a mixedcart la quantity de notre bouton
-          panier[mixedCartIndex].quantity = itemQuantity.value;
+          let quantityParse = parseInt(itemQuantity.value);
+          mixedCart[mixedCartIndex].quantity = quantityParse; //et on donne a mixedcart la quantity de notre bouton
+          panier[mixedCartIndex].quantity = quantityParse;
           updateLocal();
           calculQtePrice();
         });
       }
-
+      //À chaque click du bouton supprimé elle regarde l'objet le plus près et le cherche dans le mixedcart puis elle le supprime
       let deleteButtons = document.querySelectorAll(".deleteItem");
       for (let suppr of deleteButtons) {
         suppr.addEventListener("click", () => {
@@ -84,6 +85,7 @@ function fetchData() {
     });
 }
 
+//Permets d'afficher les objets du mixed cart en article HTML
 function buildHtml() {
   mixedCart.forEach((object) => {
     itemCart.innerHTML += `
@@ -118,20 +120,21 @@ function calculQtePrice() {
     (accumulator, x) => accumulator + x.quantity,
     0
   );
+
   let priceCalcul = mixedCart.reduce(
-    (accumulator, x) => accumulator + x.price,
+    (accumulator, x) => accumulator + x.quantity * x.price,
     0
   );
   totalQuantity.innerHTML = `${quantityCalcul}`;
   totalPrice.innerHTML = `${priceCalcul}`;
 }
- //cette fonction permet de nettoyer le local storage te le mettre a jour a chaque fois qu'un objet est supprimer ou modifier
+
+//cette fonction permet de nettoyer le local storage te le mettre à jour à chaque fois qu'un objet est supprimé ou modifier
 function updateLocal() {
   localStorage.clear();
   localStorage.setItem("cart", JSON.stringify(panier));
 }
 
-//check le form si toutes les informations sont corrects
 let regexInfos = [
   {
     regex: /^[A-Za-z]+(((\'|\-|\.)?([A-Za-z])+))?$/,
@@ -165,43 +168,49 @@ let regexInfos = [
   },
 ];
 
+//cette fonction va renvoyer si chaque reg ex est true ou false si une est fausse le formulaire n'est pas envoyée
 let userData = [];
-
 function validate(regexInfos) {
+  let isValid = true;
   regexInfos.forEach((regexEl) => {
     let inputElement = document.getElementById(regexEl.elementId).value;
     let inputElementResult = regexEl.regex.test(inputElement);
     if (inputElementResult == false) {
       let errorInputElement = document.getElementById(regexEl.errorMessageId);
       errorInputElement.innerHTML = regexEl.errorMessage;
+      isValid = false;
     } else {
-      return (userData = {
+      userData = {
         firstName: document.getElementById("firstName").value,
         lastName: document.getElementById("lastName").value,
-        adress: document.getElementById("address").value,
+        address: document.getElementById("address").value,
         city: document.getElementById("city").value,
         email: document.getElementById("email").value,
-      });
+      };
     }
   });
+  return isValid;
 }
 
 let btnSubmit = document.getElementById("order");
 
 btnSubmit.addEventListener("click", (e) => {
   e.preventDefault();
-  validate(regexInfos);
-  postData();
+  if (validate(regexInfos)) {
+    postData();
+  }
 });
 
+//si jamais tous les regex sont valides l'objet est envoyé à l'api
 function postData() {
-  fetch("http://localhost:3000/api/products", {
+  let productsId = mixedCart.map((product) => product.id);
+  fetch("http://localhost:3000/api/products/order", {
     method: "POST",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(userData, mixedCart),
+    body: JSON.stringify({ contact: userData, products: productsId }),
   })
     .then(function (res) {
       if (res.ok) {
@@ -209,17 +218,11 @@ function postData() {
       }
     })
     .then(function (value) {
+      window.location.replace(
+        `http://127.0.0.1:5500/front/html/confirmation.html?orderId=${value.orderId}`
+      );
       console.log(value);
     });
 }
 
 fetchData();
-
-//regex
-
-//prenom: /^[a-zA-Z]+ [a-zA-Z]+$/;
-//nom: /^[a-zA-Z]+ [a-zA-Z]+$/;
-// adresse: /^[a-z0-9\s,'-]*$/i
-// Ville: ^[a-zA-Z\\u0080-\\u024F.]+((?:[ -.|'])[a-zA-Z\\u0080-\\u024F]+)*$
-//Ville2: ^[a-zA-Z\u0080-\u024F]+(?:. |-| |')*([1-9a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$
-// email: 	^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$

@@ -46,7 +46,7 @@ function buildHtml(data) {
 }
 
 let cart = [];
-
+//Vérifie si la quantité et la couleur sont les mêmes 
 function verify(product) {
   let objJson = localStorage.getItem("cart");
   if (objJson) {
@@ -60,7 +60,7 @@ function verify(product) {
     }
   });
 }
-
+//regarde si la quantité sélectionnée par l'utilisateur est entre 1 et 100
 function quantityCheck(checkProduct) {
   if (checkProduct.quantity > 0 && checkProduct.quantity <= 100) {
     return true;
@@ -68,7 +68,7 @@ function quantityCheck(checkProduct) {
     return false;
   }
 }
-
+//si la quantité est bonne il s'occupe de changer notre commande en objet 
 btn.addEventListener("click", () => {
   let quantityValue = quantity.value;
   let quantityNumber = parseInt(quantityValue);
@@ -78,12 +78,12 @@ btn.addEventListener("click", () => {
     id: id,
   };
   let checkQuantity = quantityCheck(productAdded);
-
+//si la quantité est mauvaise il renvoie une alerte
   if (checkQuantity == true) {
   } else {
     return alert("quantity");
   }
-
+// ici on vérifie si on additionne les produits la quantité reste inférieure à 100
   let productIndex = verify(productAdded);
   if (productIndex < 0) {
     cart.push(productAdded);
