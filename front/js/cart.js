@@ -88,29 +88,86 @@ function fetchData() {
 //Permets d'afficher les objets du mixed cart en article HTML
 function buildHtml() {
   mixedCart.forEach((object) => {
-    itemCart.innerHTML += `
-    <article class="cart__item" data-id="${object.id}" data-color="${object.color}">
-    <div class="cart__item__img">
-    <img src="${object.image}" alt="${object.desc}">
-    </div>
-    <div class="cart__item__content">
-    <div class="cart__item__content__description">
-    <h2>${object.name}</h2>
-    <p>${object.color}</p>
-    <p>${object.price} €</p>
-    </div>
-    <div class="cart__item__content__settings">
-    <div class="cart__item__content__settings__quantity">
-    <p>Qté :</p>
-    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${object.quantity}">
-    </div>
-    <div class="cart__item__content__settings__delete">
-    <p class="deleteItem">Supprimer</p>
-    </div>
-    </div>
-    </div>
-    </article>
-    `;
+    // Création de la balise "article" et insertion dans la section
+    let objectArticle = document.createElement("article");
+    document.querySelector("#cart__items").appendChild(objectArticle);
+    objectArticle.className = "cart__item";
+    objectArticle.setAttribute("data-id", object.id);
+    objectArticle.setAttribute("data-color", object.color);
+
+    // Insertion de l'élément "div" pour l'image produit
+    let objectDivImg = document.createElement("div");
+    objectArticle.appendChild(objectDivImg);
+    objectDivImg.className = "cart__item__img";
+
+    // Insertion de l'image
+    let objectImg = document.createElement("img");
+    objectDivImg.appendChild(objectImg);
+    objectImg.src = object.image;
+    objectImg.alt = object.imgAlt;
+
+    // Insertion de l'élément "div" pour la description produit
+    let objectItemContent = document.createElement("div");
+    objectArticle.appendChild(objectItemContent);
+    objectItemContent.className = "cart__item__content";
+
+    // Insertion de l'élément "div"
+    let objectItemContentTitlePrice = document.createElement("div");
+    objectItemContent.appendChild(objectItemContentTitlePrice);
+    objectItemContentTitlePrice.className = "cart__item__content__description";
+
+    // Insertion du titre h2
+    let objectTitle = document.createElement("h2");
+    objectItemContentTitlePrice.appendChild(objectTitle);
+    objectTitle.innerHTML = object.name;
+
+    // Insertion de la couleur
+    let objectColor = document.createElement("p");
+    objectTitle.after(objectColor);
+    objectColor.innerHTML = object.color;
+
+    // Insertion du prix
+    let objectPrice = document.createElement("p");
+    objectItemContentTitlePrice.appendChild(objectPrice);
+    objectPrice.innerHTML = object.price + " €";
+
+    // Insertion de l'élément "div"
+    let objectItemContentSettings = document.createElement("div");
+    objectItemContent.appendChild(objectItemContentSettings);
+    objectItemContentSettings.className = "cart__item__content__settings";
+
+    // Insertion de l'élément "div"
+    let objectItemContentSettingsQuantity = document.createElement("div");
+    objectItemContentSettings.appendChild(objectItemContentSettingsQuantity);
+    objectItemContentSettingsQuantity.className =
+      "cart__item__content__settings__quantity";
+    //
+    // Insertion de "Qté : "
+    let itemQuantity = document.createElement("p");
+    objectItemContentSettingsQuantity.appendChild(itemQuantity);
+    itemQuantity.innerHTML = "Qté : ";
+
+    // Insertion de la quantité
+    let objectQuantity = document.createElement("input");
+    objectItemContentSettingsQuantity.appendChild(objectQuantity);
+    objectQuantity.value = object.quantity;
+    objectQuantity.className = "itemQuantity";
+    objectQuantity.setAttribute("type", "number");
+    objectQuantity.setAttribute("min", "1");
+    objectQuantity.setAttribute("max", "100");
+    objectQuantity.setAttribute("name", "itemQuantity");
+
+    // Insertion de l'élément "div"
+    let objectItemContentSettingsDelete = document.createElement("div");
+    objectItemContentSettings.appendChild(objectItemContentSettingsDelete);
+    objectItemContentSettingsDelete.className =
+      "cart__item__content__settings__delete";
+
+    // Insertion de "p" supprimer
+    let objectSupprimer = document.createElement("p");
+    objectItemContentSettingsDelete.appendChild(objectSupprimer);
+    objectSupprimer.className = "deleteItem";
+    objectSupprimer.innerHTML = "Supprimer";
   });
 }
 
@@ -168,7 +225,7 @@ let regexInfos = [
   },
 ];
 
-//cette fonction va renvoyer si chaque reg ex est true ou false si une est fausse le formulaire n'est pas envoyée
+//cette fonction va renvoyer si chaque regex est true ou false si une est fausse le formulaire n'est pas envoyée
 let userData = [];
 function validate(regexInfos) {
   let isValid = true;
@@ -180,6 +237,7 @@ function validate(regexInfos) {
       errorInputElement.innerHTML = regexEl.errorMessage;
       isValid = false;
     } else {
+      console.log("test");
       userData = {
         firstName: document.getElementById("firstName").value,
         lastName: document.getElementById("lastName").value,
@@ -219,7 +277,7 @@ function postData() {
     })
     .then(function (value) {
       window.location.replace(
-        `http://127.0.0.1:5500/front/html/confirmation.html?orderId=${value.orderId}`
+        `./confirmation.html?orderId=${value.orderId}`
       );
       console.log(value);
     });
