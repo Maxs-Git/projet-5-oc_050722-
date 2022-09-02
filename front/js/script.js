@@ -25,12 +25,12 @@ function fetchData() {
         let productName = document.createElement("h3");
         productArticle.appendChild(productName);
         productName.classList.add("productName");
-        productName.innerHTML = data[i].name;
+        productName.textContent = data[i].name;
 
         let productDescription = document.createElement("p");
         productArticle.appendChild(productDescription);
         productDescription.classList.add("productName");
-        productDescription.innerHTML = data[i].description;
+        productDescription.textContent = data[i].description;
       }
     })
     .catch((error) => {

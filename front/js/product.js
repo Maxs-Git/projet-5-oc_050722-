@@ -34,15 +34,15 @@ fetchData();
 function buildHtml(data) {
   img.setAttribute("src", data.imageUrl);
   img.setAttribute("alt", data.altTxt);
-  title.innerHTML = data.name;
-  price.innerHTML = data.price;
-  desc.innerHTML = data.description;
+  title.textContent = data.name;
+  price.textContent = data.price;
+  desc.textContent = data.description;
   document.title = data.name;
 
   for (let i = 0; i < data.colors.length; i++) {
     let color = document.createElement("option");
     color.setAttribute("value", data.colors[i]);
-    color.innerHTML = data.colors[i];
+    color.textContent = data.colors[i];
     colors.appendChild(color);
   }
 }

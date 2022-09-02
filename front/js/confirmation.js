@@ -4,5 +4,5 @@ const orderId = urlParams.get("orderId");
 
 let orderIdHtml = document.getElementById("orderId");
 
-orderIdHtml.innerHTML = `${orderId}`;
+orderIdHtml.textContent = `${orderId}`;
 localStorage.clear();

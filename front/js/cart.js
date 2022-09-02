@@ -119,17 +119,17 @@ function buildHtml() {
     // Insertion du titre h2
     let objectTitle = document.createElement("h2");
     objectItemContentTitlePrice.appendChild(objectTitle);
-    objectTitle.innerHTML = object.name;
+    objectTitle.textContent = object.name;
 
     // Insertion de la couleur
     let objectColor = document.createElement("p");
     objectTitle.after(objectColor);
-    objectColor.innerHTML = object.color;
+    objectColor.textContent = object.color;
 
     // Insertion du prix
     let objectPrice = document.createElement("p");
     objectItemContentTitlePrice.appendChild(objectPrice);
-    objectPrice.innerHTML = object.price + " €";
+    objectPrice.textContent = object.price + " €";
 
     // Insertion de l'élément "div"
     let objectItemContentSettings = document.createElement("div");
@@ -145,7 +145,7 @@ function buildHtml() {
     // Insertion de "Qté : "
     let itemQuantity = document.createElement("p");
     objectItemContentSettingsQuantity.appendChild(itemQuantity);
-    itemQuantity.innerHTML = "Qté : ";
+    itemQuantity.textContent = "Qté : ";
 
     // Insertion de la quantité
     let objectQuantity = document.createElement("input");
@@ -167,7 +167,7 @@ function buildHtml() {
     let objectSupprimer = document.createElement("p");
     objectItemContentSettingsDelete.appendChild(objectSupprimer);
     objectSupprimer.className = "deleteItem";
-    objectSupprimer.innerHTML = "Supprimer";
+    objectSupprimer.textContent = "Supprimer";
   });
 }
 
@@ -182,8 +182,8 @@ function calculQtePrice() {
     (accumulator, x) => accumulator + x.quantity * x.price,
     0
   );
-  totalQuantity.innerHTML = `${quantityCalcul}`;
-  totalPrice.innerHTML = `${priceCalcul}`;
+  totalQuantity.textContent = `${quantityCalcul}`;
+  totalPrice.textContent = `${priceCalcul}`;
 }
 
 //cette fonction permet de nettoyer le local storage te le mettre à jour à chaque fois qu'un objet est supprimé ou modifier
@@ -234,7 +234,7 @@ function validate(regexInfos) {
     let inputElementResult = regexEl.regex.test(inputElement);
     if (inputElementResult == false) {
       let errorInputElement = document.getElementById(regexEl.errorMessageId);
-      errorInputElement.innerHTML = regexEl.errorMessage;
+      errorInputElement.textContent = regexEl.errorMessage;
       isValid = false;
     } else {
       console.log("test");
@@ -276,9 +276,7 @@ function postData() {
       }
     })
     .then(function (value) {
-      window.location.replace(
-        `./confirmation.html?orderId=${value.orderId}`
-      );
+      window.location.replace(`./confirmation.html?orderId=${value.orderId}`);
       console.log(value);
     });
 }
